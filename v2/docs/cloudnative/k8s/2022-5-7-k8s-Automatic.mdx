@@ -1,0 +1,91 @@
+---
+id: 2022-5-7-k8s-Automatic
+description: 自动安装
+# slug: 原理篇：CAN与CANOpen基础
+title: 🍊 自动安装
+sidebar_position: 3
+# tags:
+#     - P 1.3
+   #  - Work needed
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import Thumbnail from "@site/src/components/Thumbnail";
+
+import TOCInline from '@theme/TOCInline';
+
+:::info
+
+平台：Ubuntu20.04  
+部署工具：kainstall
+
+:::
+
+
+## [设置静态IP](https://www.zhangshitao.top/2022-5-7-staticIP)
+如果机器重启后，路由分配了其他IP，那集群将因为IP地址不匹配而无法启动
+
+## 开启SSH root用户登录
+~~~shell
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get -y install openssh-server
+
+sudo gedit /etc/ssh/sshd_config
+PermitRootLogin yes #添加该行，允许以root身份登录
+
+sudo passwd root #修改root密码
+
+systemctl restart sshd
+~~~
+
+
+
+## 推荐的自动部署应用👇 II
+
+<Tabs className="api-tabs">
+<TabItem value="sealos" label="sealos">
+
+### 项目[主页](https://github.com/labring/sealos)
+
+##### 初始化
+
+~~~shell
+sealos init --passwd '0' \
+	--master 192.168.1.200  \
+	--pkg-url kube1.22.6.tar.gz \
+	--version v1.22.6
+~~~
+
+</TabItem>
+<TabItem value="kainstall" label="kainstall">
+
+
+#### 克隆代码
+
+~~~shell
+git clone https://github.com/lework/kainstall.git
+~~~
+
+### 初始化集群
+
+~~~shell
+bash kainstall-ubuntu.sh init \
+  --master 192.168.1.200 \
+  --user root \
+  --password 0 \
+  --port 22 \
+  --version 1.22.6 \
+  --ui kuboard  \
+  --10years
+~~~
+
+一般情况下可以直接部署完毕
+
+~~~shell
+kubectl get pods,svc -o wide -A #查看集群信息
+~~~
+
+</TabItem>
+</Tabs>
